@@ -1,0 +1,50 @@
+{
+  "dashboard": {
+    "uid": "fluxwatch-errors",
+    "title": "FluxWatch - Error Tracking",
+    "tags": ["fluxwatch", "errors"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Error Rate (errors/sec)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          { "expr": "sum(rate(log_entries_total{level=~\"error|critical\"}[5m])) by (service)", "legendFormat": "{{service}}" }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Error Rate %",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+        "targets": [
+          { "expr": "sum(rate(log_entries_total{level=~\"error|critical\"}[5m])) / sum(rate(log_entries_total[5m])) * 100", "legendFormat": "error_pct" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "percent", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] } } }
+      },
+      {
+        "id": 3,
+        "title": "Top Error Messages",
+        "type": "table",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+        "targets": [
+          { "expr": "topk(10, sum by (message) (count_over_time(log_entries_total{level=~\"error|critical\"}[1h])))", "legendFormat": "{{message}}" }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Errors Over Time",
+        "type": "timeseries",
+        "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+        "targets": [
+          { "expr": "sum(rate(log_entries_total{level=\"error\"}[5m])) by (service)", "legendFormat": "error {{service}}" },
+          { "expr": "sum(rate(log_entries_total{level=\"critical\"}[5m])) by (service)", "legendFormat": "critical {{service}}" }
+        ]
+      }
+    ],
+    "time": { "from": "now-6h", "to": "now" },
+    "refresh": "10s"
+  }
+}

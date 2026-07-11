@@ -1,0 +1,24 @@
+{
+  "objects": [
+    {
+      "id": "fluxwatch-throughput-kibana",
+      "type": "index-pattern",
+      "attributes": { "title": "fluxwatch-logs-*", "timeFieldName": "timestamp_ns" }
+    },
+    {
+      "id": "fluxwatch-throughput-vis",
+      "type": "visualization",
+      "attributes": {
+        "title": "Events Per Second",
+        "visState": {
+          "title": "Throughput",
+          "type": "line",
+          "aggs": [
+            { "id": "1", "type": "count", "schema": "metric" },
+            { "id": "2", "type": "date_histogram", "params": { "field": "timestamp_ns", "interval": "1m" }, "schema": "bucket" }
+          ]
+        }
+      }
+    }
+  ]
+}

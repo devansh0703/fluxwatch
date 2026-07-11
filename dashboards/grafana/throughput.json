@@ -1,0 +1,80 @@
+{
+  "dashboard": {
+    "uid": "fluxwatch-throughput",
+    "title": "FluxWatch - Throughput",
+    "tags": ["fluxwatch"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Events/sec",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          { "expr": "sum(rate(events_total[1m]))", "legendFormat": "total_events" },
+          { "expr": "sum(rate(events_total[1m])) by (service)", "legendFormat": "{{service}}" }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Redis Stream Depth",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          { "expr": "redis_stream_length{stream=\"fluxwatch:logs\"}", "legendFormat": "stream_depth" }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Batch Flush Rate",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          { "expr": "sum(rate(collector_batch_flush_total[5m]))", "legendFormat": "flushes" },
+          { "expr": "sum(rate(collector_batch_size_sum[5m])) / sum(rate(collector_batch_size_count[5m]))", "legendFormat": "avg_batch_size" }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Queue Depth",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+        "targets": [
+          { "expr": "fluxwatch_buffer_size", "legendFormat": "buffer_size" }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 1000 },
+                { "color": "red", "value": 5000 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Dropped Events",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 8 },
+        "targets": [
+          { "expr": "sum(rate(events_dropped_total[5m]))", "legendFormat": "dropped" }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "red", "value": 1 }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "time": { "from": "now-1h", "to": "now" },
+    "refresh": "10s"
+  }
+}

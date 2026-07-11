@@ -1,0 +1,35 @@
+{
+  "index_patterns": ["fluxwatch-logs-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 2,
+      "number_of_replicas": 1,
+      "index.refresh_interval": "5s",
+      "index.lifecycle.name": "fluxwatch-logs-policy",
+      "index.lifecycle.rollover_alias": "fluxwatch-logs"
+    },
+    "mappings": {
+      "properties": {
+        "timestamp_ns": { "type": "long" },
+        "service": { "type": "keyword" },
+        "env": { "type": "keyword" },
+        "level": { "type": "keyword" },
+        "message": { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+        "trace_id": { "type": "keyword" },
+        "span_id": { "type": "keyword" },
+        "latency_ns": { "type": "long" },
+        "hostname": { "type": "keyword" },
+        "pod_name": { "type": "keyword" },
+        "container_id": { "type": "keyword" },
+        "extra": { "type": "object", "dynamic": true },
+        "metric_name": { "type": "keyword" },
+        "metric_value": { "type": "double" },
+        "tags": { "type": "object", "dynamic": true }
+      }
+    }
+  },
+  "priority": 200,
+  "_meta": {
+    "description": "FluxWatch logs index template"
+  }
+}

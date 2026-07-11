@@ -1,0 +1,19 @@
+exchanges:
+  - name: BINANCE_USDT
+    latency_ms: 3.0
+    reject_rate: 0.02
+  - name: NSE_FNO
+    latency_ms: 15.0
+    reject_rate: 0.05
+  - name: CME_ES
+    latency_ms: 8.0
+    reject_rate: 0.01
+
+redis:
+  url: redis://localhost:6379
+  stream: fluxwatch:logs
+
+trading:
+  order_interval_ms: 10
+  heartbeat_interval_s: 5
+  reconnect_interval_s: 60

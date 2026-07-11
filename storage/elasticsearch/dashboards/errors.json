@@ -1,0 +1,19 @@
+{
+  "objects": [
+    {
+      "id": "fluxwatch-errors",
+      "type": "visualization",
+      "attributes": {
+        "title": "FluxWatch - Error Tracking",
+        "visState": {
+          "title": "Errors",
+          "type": "histogram",
+          "aggs": [
+            { "id": "1", "enabled": true, "type": "count", "schema": "metric" },
+            { "id": "2", "enabled": true, "type": "terms", "params": { "field": "message", "size": 20, "order": "desc", "orderBy": "1" }, "schema": "bucket", "field": "message" }
+          ]
+        }
+      }
+    }
+  ]
+}

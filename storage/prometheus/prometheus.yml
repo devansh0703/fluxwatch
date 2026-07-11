@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "fluxwatch-agent"
+    static_configs:
+      - targets: ["localhost:9100"]
+        labels:
+          service: "demo_trader"
+    metrics_path: /metrics
+
+  - job_name: "fluxwatch-collector"
+    static_configs:
+      - targets: ["localhost:9101"]
+        labels:
+          service: "collector"
+    metrics_path: /metrics
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "redis-exporter"
+    static_configs:
+      - targets: ["localhost:9121"]
+    metrics_path: /metrics

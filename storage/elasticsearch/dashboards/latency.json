@@ -1,0 +1,25 @@
+{
+  "objects": [
+    {
+      "id": "fluxwatch-latency",
+      "type": "visualization",
+      "attributes": {
+        "title": "FluxWatch - Latency Analysis",
+        "visState": {
+          "title": "Latency Analysis",
+          "type": "line",
+          "aggs": [
+            { "id": "1", "enabled": true, "type": "percentiles", "params": { "percents": [50, 95, 99, 99.9] }, "schema": "metric", "field": "latency_ns" },
+            { "id": "2", "enabled": true, "type": "terms", "params": { "field": "service", "size": 20, "order": "desc", "orderBy": "1" }, "schema": "bucket", "field": "service" }
+          ],
+          "params": {
+            "type": "line",
+            "grid": { "categoryLines": false },
+            "categoryAxes": [{ "id": "CategoryAxis-1", "type": "category", "position": "bottom" }],
+            "valueAxes": [{ "id": "ValueAxis-1", "name": "LeftAxis-1", "type": "value", "position": "left", "labels": { "show": true, "truncate": 100 } }]
+          }
+        }
+      }
+    }
+  ]
+}

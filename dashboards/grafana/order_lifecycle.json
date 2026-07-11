@@ -1,0 +1,88 @@
+{
+  "dashboard": {
+    "uid": "fluxwatch-order-lifecycle",
+    "title": "FluxWatch - Order Lifecycle",
+    "tags": ["fluxwatch", "trading"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Order Funnel",
+        "type": "bargauge",
+        "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          { "expr": "sum(order_total_total)", "legendFormat": "Sent" },
+          { "expr": "sum(order_ack_total)", "legendFormat": "Acknowledged" },
+          { "expr": "sum(order_fill_total)", "legendFormat": "Filled" },
+          { "expr": "sum(order_reject_total)", "legendFormat": "Rejected" }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Reject Rate",
+        "type": "stat",
+        "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "sum(rate(order_reject_total[5m])) / sum(rate(order_total_total[5m]))",
+            "legendFormat": "reject_rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 0.03 },
+                { "color": "red", "value": 0.05 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Fill Latency (p50/p95/p99)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+        "targets": [
+          { "expr": "histogram_quantile(0.50, sum(rate(fill_latency_ns_bucket[5m])) by (le))", "legendFormat": "p50" },
+          { "expr": "histogram_quantile(0.95, sum(rate(fill_latency_ns_bucket[5m])) by (le))", "legendFormat": "p95" },
+          { "expr": "histogram_quantile(0.99, sum(rate(fill_latency_ns_bucket[5m])) by (le))", "legendFormat": "p99" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "ns" } }
+      },
+      {
+        "id": 4,
+        "title": "Orders/sec by Exchange",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+        "targets": [
+          { "expr": "sum(rate(order_total_total[1m])) by (exchange)", "legendFormat": "{{exchange}}" }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Rejection Reasons",
+        "type": "piechart",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+        "targets": [
+          { "expr": "sum(order_reject_total) by (reason)", "legendFormat": "{{reason}}" }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Revenue Impact",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 14 },
+        "targets": [
+          { "expr": "sum(order_fees_total)", "legendFormat": "total_fees" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+      }
+    ],
+    "time": { "from": "now-6h", "to": "now" },
+    "refresh": "10s"
+  }
+}

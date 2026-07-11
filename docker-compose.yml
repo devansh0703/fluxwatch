@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports: ["9200:9200"]
+    volumes:
+      - ./storage/elasticsearch/templates.json:/usr/share/elasticsearch/data/templates/fluxwatch.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    ports: ["9090:9090"]
+    volumes:
+      - ./storage/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 10s
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    ports: ["3000:3000"]
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=fluxwatch
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/fluxwatch-exchange
+    volumes:
+      - ./dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./dashboards/grafana/exchange_connectivity.json:/var/lib/grafana/dashboards/exchange_connectivity.json:ro
+      - ./dashboards/grafana/order_lifecycle.json:/var/lib/grafana/dashboards/order_lifecycle.json:ro
+      - ./dashboards/grafana/latency_analysis.json:/var/lib/grafana/dashboards/latency_analysis.json:ro
+      - ./dashboards/grafana/throughput.json:/var/lib/grafana/dashboards/throughput.json:ro
+      - ./dashboards/grafana/error_tracking.json:/var/lib/grafana/dashboards/error_tracking.json:ro
+    depends_on:
+      - prometheus
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    ports: ["5601:5601"]
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    ports: ["9093:9093"]
+    volumes:
+      - ./dashboards/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+
+  collector:
+    build: .
+    environment:
+      - FLUXWATCH_SERVICE=collector
+      - FLUXWATCH_ENV=demo
+      - FLUXWATCH_REDIS_URL=redis://redis:6379
+      - FLUXWATCH_ES_URL=http://elasticsearch:9200
+    depends_on:
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+
+  demo-trader:
+    build: .
+    command: ["python", "-m", "demo.trader"]
+    environment:
+      - FLUXWATCH_REDIS_URL=redis://redis:6379
+      - FLUXWATCH_REDIS_STREAM=fluxwatch:logs
+    depends_on:
+      redis:
+        condition: service_healthy

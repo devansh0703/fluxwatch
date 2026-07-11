@@ -1,0 +1,25 @@
+{
+  "objects": [
+    {
+      "id": "fluxwatch-errors-kibana",
+      "type": "index-pattern",
+      "attributes": { "title": "fluxwatch-logs-*", "timeFieldName": "timestamp_ns" }
+    },
+    {
+      "id": "fluxwatch-errors-vis",
+      "type": "visualization",
+      "attributes": {
+        "title": "Error Rate Over Time",
+        "visState": {
+          "title": "Error Rate",
+          "type": "line",
+          "aggs": [
+            { "id": "1", "type": "count", "schema": "metric" },
+            { "id": "2", "type": "date_histogram", "params": { "field": "timestamp_ns", "interval": "auto" }, "schema": "bucket" },
+            { "id": "3", "type": "filters", "params": { "filters": [{ "query": { "match": { "level": "error" } }, "label": "errors" }, { "query": { "match": { "level": "critical" } }, "label": "critical" }] }, "schema": "group" }
+          ]
+        }
+      }
+    }
+  ]
+}

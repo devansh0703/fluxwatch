@@ -1,0 +1,71 @@
+{
+  "dashboard": {
+    "uid": "fluxwatch-latency",
+    "title": "FluxWatch - Latency Analysis",
+    "tags": ["fluxwatch", "latency"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Latency Percentiles by Service",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          { "expr": "histogram_quantile(0.50, sum(rate(request_latency_ns_bucket[5m])) by (le, service))", "legendFormat": "p50 {{service}}" },
+          { "expr": "histogram_quantile(0.95, sum(rate(request_latency_ns_bucket[5m])) by (le, service))", "legendFormat": "p95 {{service}}" },
+          { "expr": "histogram_quantile(0.99, sum(rate(request_latency_ns_bucket[5m])) by (le, service))", "legendFormat": "p99 {{service}}" },
+          { "expr": "histogram_quantile(0.999, sum(rate(request_latency_ns_bucket[5m])) by (le, service))", "legendFormat": "p999 {{service}}" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "ns" } }
+      },
+      {
+        "id": 2,
+        "title": "Latency Distribution",
+        "type": "histogram",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          { "expr": "sum(request_latency_ns_bucket) by (le)", "legendFormat": "{{le}}" }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Fill Latency Heatmap",
+        "type": "heatmap",
+        "gridPos": { "h": 10, "w": 24, "x": 0, "y": 8 },
+        "targets": [
+          { "expr": "sum(rate(fill_latency_ns_bucket[1m])) by (le)", "legendFormat": "{{le}}" }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Latency SLO Compliance",
+        "type": "gauge",
+        "gridPos": { "h": 5, "w": 8, "x": 0, "y": 18 },
+        "targets": [
+          { "expr": "1 - (histogram_quantile(0.99, sum(rate(fill_latency_ns_bucket[5m])) by (le)) > 1000000)", "legendFormat": "p99 < 1ms" }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Latency P99 by Exchange",
+        "type": "stat",
+        "gridPos": { "h": 5, "w": 8, "x": 8, "y": 18 },
+        "targets": [
+          { "expr": "histogram_quantile(0.99, sum(rate(fill_latency_ns_bucket[5m])) by (le, exchange))", "legendFormat": "{{exchange}}" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "ns" } }
+      },
+      {
+        "id": 6,
+        "title": "Latency Budget Remaining",
+        "type": "bargauge",
+        "gridPos": { "h": 5, "w": 8, "x": 16, "y": 18 },
+        "targets": [
+          { "expr": "1000000 - histogram_quantile(0.99, sum(rate(fill_latency_ns_bucket[5m])) by (le))", "legendFormat": "budget_remaining" }
+        ],
+        "fieldConfig": { "defaults": { "unit": "ns", "max": 1000000 } } }
+    ],
+    "time": { "from": "now-1h", "to": "now" },
+    "refresh": "10s"
+  }
+}

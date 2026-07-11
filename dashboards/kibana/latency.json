@@ -1,0 +1,24 @@
+{
+  "objects": [
+    {
+      "id": "fluxwatch-latency-kibana",
+      "type": "index-pattern",
+      "attributes": { "title": "fluxwatch-logs-*", "timeFieldName": "timestamp_ns" }
+    },
+    {
+      "id": "fluxwatch-latency-vis",
+      "type": "visualization",
+      "attributes": {
+        "title": "Latency Distribution",
+        "visState": {
+          "title": "Latency Distribution",
+          "type": "histogram",
+          "aggs": [
+            { "id": "1", "type": "percentiles", "params": { "field": "latency_ns", "percents": [50, 95, 99, 99.9] }, "schema": "metric" },
+            { "id": "2", "type": "date_histogram", "params": { "field": "timestamp_ns", "interval": "auto" }, "schema": "bucket" }
+          ]
+        }
+      }
+    }
+  ]
+}

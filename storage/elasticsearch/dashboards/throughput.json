@@ -1,0 +1,19 @@
+{
+  "objects": [
+    {
+      "id": "fluxwatch-throughput",
+      "type": "visualization",
+      "attributes": {
+        "title": "FluxWatch - Throughput",
+        "visState": {
+          "title": "Throughput",
+          "type": "line",
+          "aggs": [
+            { "id": "1", "enabled": true, "type": "count", "schema": "metric" },
+            { "id": "2", "enabled": true, "type": "date_histogram", "params": { "field": "timestamp_ns", "interval": "auto" }, "schema": "bucket" }
+          ]
+        }
+      }
+    }
+  ]
+}

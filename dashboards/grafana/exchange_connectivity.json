@@ -1,0 +1,91 @@
+{
+  "dashboard": {
+    "uid": "fluxwatch-exchange",
+    "title": "FluxWatch - Exchange Connectivity",
+    "tags": ["fluxwatch", "trading"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "WebSocket Reconnect Count",
+        "type": "stat",
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "sum(rate(ws_reconnect_count_total[5m])) by (exchange)",
+            "legendFormat": "{{exchange}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 3 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "WS Connection Uptime",
+        "type": "gauge",
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+        "targets": [
+          {
+            "expr": "1 - (sum(rate(ws_disconnect_total[5m])) by (exchange) / sum(rate(ws_heartbeat_total[5m])) by (exchange))",
+            "legendFormat": "{{exchange}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": { "min": 0, "max": 1, "unit": "percentunit" }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Message Rate (msg/s)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+        "targets": [
+          {
+            "expr": "sum(rate(ws_messages_received_total[1m])) by (exchange)",
+            "legendFormat": "{{exchange}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Heartbeat Lag (ms)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(ws_heartbeat_lag_ms_bucket[5m])) by (le, exchange))",
+            "legendFormat": "p99 {{exchange}}"
+          },
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(ws_heartbeat_lag_ms_bucket[5m])) by (le, exchange))",
+            "legendFormat": "p50 {{exchange}}"
+          }
+        ],
+        "fieldConfig": { "defaults": { "unit": "ms" } }
+      },
+      {
+        "id": 5,
+        "title": "Exchange Status",
+        "type": "table",
+        "gridPos": { "h": 6, "w": 24, "x": 0, "y": 12 },
+        "targets": [
+          {
+            "expr": "up{job=\"fluxwatch-agent\"}",
+            "legendFormat": "{{instance}}"
+          }
+        ]
+      }
+    ],
+    "time": { "from": "now-1h", "to": "now" },
+    "refresh": "10s"
+  }
+}
