@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -9,10 +9,13 @@ COPY collector/ /app/collector/
 COPY alerting/ /app/alerting/
 COPY cli/ /app/cli/
 COPY demo/ /app/demo/
+COPY storage/ /app/storage/
+COPY dashboards/ /app/dashboards/
 COPY pyproject.toml /app/
 
-RUN pip install --no-cache-dir /app/agent/ /app/
+RUN pip install --no-cache-dir -e /app/agent/ -e /app/.
 
-EXPOSE 9100
+EXPOSE 9100 9101
 
-CMD ["python", "-m", "collector.pipeline"]
+ENTRYPOINT ["python", "-m", "cli.main"]
+CMD ["--help"]

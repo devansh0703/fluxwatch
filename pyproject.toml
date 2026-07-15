@@ -25,6 +25,10 @@ fluxwatch = "cli.main:cli"
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent*", "collector*", "alerting*", "cli*", "demo*", "storage*", "dashboards*"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests", "agent/tests"]
