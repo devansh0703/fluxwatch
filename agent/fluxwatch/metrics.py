@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import math
 import threading
-import time
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 
 class Counter:
-    def __init__(self, name: str, description: str = "", labels: list[str] | None = None) -> None:
+    def __init__(
+        self, name: str, description: str = "", labels: list[str] | None = None
+    ) -> None:
         self.name = name
         self.description = description
         self.labels = labels or []
@@ -18,7 +17,7 @@ class Counter:
     def _key(self, labels: dict[str, str] | None) -> tuple[str, ...]:
         if not labels:
             return ()
-        return tuple(labels.get(l, "") for l in self.labels)
+        return tuple(labels.get(label, "") for label in self.labels)
 
     def inc(self, value: float = 1.0, labels: dict[str, str] | None = None) -> None:
         with self._lock:
@@ -40,7 +39,9 @@ class Counter:
 
 
 class Gauge:
-    def __init__(self, name: str, description: str = "", labels: list[str] | None = None) -> None:
+    def __init__(
+        self, name: str, description: str = "", labels: list[str] | None = None
+    ) -> None:
         self.name = name
         self.description = description
         self.labels = labels or []
@@ -50,7 +51,7 @@ class Gauge:
     def _key(self, labels: dict[str, str] | None) -> tuple[str, ...]:
         if not labels:
             return ()
-        return tuple(labels.get(l, "") for l in self.labels)
+        return tuple(labels.get(label, "") for label in self.labels)
 
     def set(self, value: float, labels: dict[str, str] | None = None) -> None:
         with self._lock:
@@ -78,7 +79,13 @@ class Gauge:
 class Histogram:
     BUCKETS = (0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0)
 
-    def __init__(self, name: str, description: str = "", labels: list[str] | None = None, buckets: tuple[float, ...] | None = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        labels: list[str] | None = None,
+        buckets: tuple[float, ...] | None = None,
+    ) -> None:
         self.name = name
         self.description = description
         self.labels = labels or []
@@ -89,7 +96,7 @@ class Histogram:
     def _key(self, labels: dict[str, str] | None) -> tuple[str, ...]:
         if not labels:
             return ()
-        return tuple(labels.get(l, "") for l in self.labels)
+        return tuple(labels.get(label, "") for label in self.labels)
 
     def _get_data(self, key: tuple[str, ...]) -> _HistData:
         if key not in self._data:
@@ -169,7 +176,9 @@ class _HistData:
 
 
 class Summary:
-    def __init__(self, name: str, description: str = "", labels: list[str] | None = None) -> None:
+    def __init__(
+        self, name: str, description: str = "", labels: list[str] | None = None
+    ) -> None:
         self.name = name
         self.description = description
         self.labels = labels or []
@@ -179,7 +188,7 @@ class Summary:
     def _key(self, labels: dict[str, str] | None) -> tuple[str, ...]:
         if not labels:
             return ()
-        return tuple(labels.get(l, "") for l in self.labels)
+        return tuple(labels.get(label, "") for label in self.labels)
 
     def observe(self, value: float, labels: dict[str, str] | None = None) -> None:
         with self._lock:
@@ -229,25 +238,37 @@ class MetricRegistry:
         self._summaries: dict[str, Summary] = {}
         self._lock = threading.Lock()
 
-    def counter(self, name: str, description: str = "", labels: list[str] | None = None) -> Counter:
+    def counter(
+        self, name: str, description: str = "", labels: list[str] | None = None
+    ) -> Counter:
         with self._lock:
             if name not in self._counters:
                 self._counters[name] = Counter(name, description, labels)
             return self._counters[name]
 
-    def gauge(self, name: str, description: str = "", labels: list[str] | None = None) -> Gauge:
+    def gauge(
+        self, name: str, description: str = "", labels: list[str] | None = None
+    ) -> Gauge:
         with self._lock:
             if name not in self._gauges:
                 self._gauges[name] = Gauge(name, description, labels)
             return self._gauges[name]
 
-    def histogram(self, name: str, description: str = "", labels: list[str] | None = None, buckets: tuple[float, ...] | None = None) -> Histogram:
+    def histogram(
+        self,
+        name: str,
+        description: str = "",
+        labels: list[str] | None = None,
+        buckets: tuple[float, ...] | None = None,
+    ) -> Histogram:
         with self._lock:
             if name not in self._histograms:
                 self._histograms[name] = Histogram(name, description, labels, buckets)
             return self._histograms[name]
 
-    def summary(self, name: str, description: str = "", labels: list[str] | None = None) -> Summary:
+    def summary(
+        self, name: str, description: str = "", labels: list[str] | None = None
+    ) -> Summary:
         with self._lock:
             if name not in self._summaries:
                 self._summaries[name] = Summary(name, description, labels)

@@ -3,7 +3,13 @@ import time
 
 from fluxwatch.core import FluxWatchLogger, configure
 from fluxwatch.config import FluxWatchConfig
-from fluxwatch.context import new_span, reset_context, set_trace_context, get_trace_id, get_span_id
+from fluxwatch.context import (
+    new_span,
+    reset_context,
+    set_trace_context,
+    get_trace_id,
+    get_span_id,
+)
 from fluxwatch.prometheus import render_metrics
 
 
@@ -77,6 +83,7 @@ def test_latency_decorator():
 
 def test_latency_decorator_async():
     import asyncio
+
     config = FluxWatchConfig(service="async_latency_test", env="test")
     logger = FluxWatchLogger(config)
 

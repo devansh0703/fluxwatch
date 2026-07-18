@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import random
-import time
 from typing import Any
-
-import redis.asyncio as aioredis
 
 
 class SimulatedExchange:
-    def __init__(self, name: str, latency_ms: float = 5.0, reject_rate: float = 0.02) -> None:
+    def __init__(
+        self, name: str, latency_ms: float = 5.0, reject_rate: float = 0.02
+    ) -> None:
         self.name = name
         self._latency_ms = latency_ms
         self._reject_rate = reject_rate
@@ -34,7 +32,9 @@ class SimulatedExchange:
             return {
                 "status": "rejected",
                 "order_id": None,
-                "reason": random.choice(["INSUFFICIENT_FUNDS", "PRICE_BAND", "LOT_SIZE", "RISK_LIMIT"]),
+                "reason": random.choice(
+                    ["INSUFFICIENT_FUNDS", "PRICE_BAND", "LOT_SIZE", "RISK_LIMIT"]
+                ),
                 "exchange": self.name,
                 "latency_ms": self._latency_ms * (1 + random.uniform(0, 0.5)),
             }

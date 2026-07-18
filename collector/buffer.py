@@ -33,7 +33,10 @@ class Buffer:
         with self._lock:
             if len(self._items) >= self._max_size:
                 return True
-            if time.monotonic() - self._last_flush >= self._flush_interval and self._items:
+            if (
+                time.monotonic() - self._last_flush >= self._flush_interval
+                and self._items
+            ):
                 return True
             return False
 

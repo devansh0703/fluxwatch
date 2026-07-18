@@ -24,7 +24,9 @@ class PrometheusExporter:
                 if self.path == "/metrics":
                     body = render_metrics(registry)
                     self.send_response(200)
-                    self.send_header("Content-Type", "text/plain; version=0.0.4; charset=utf-8")
+                    self.send_header(
+                        "Content-Type", "text/plain; version=0.0.4; charset=utf-8"
+                    )
                     self.end_headers()
                     self.wfile.write(body.encode())
                 else:
@@ -33,6 +35,7 @@ class PrometheusExporter:
 
             def log_message(self, format: str, *args: object) -> None:
                 import logging as _logging
+
                 _logging.getLogger("fluxwatch.prometheus").debug(format, *args)
 
         self._server = HTTPServer(("0.0.0.0", port), Handler)
@@ -69,7 +72,7 @@ def render_metrics(registry: MetricRegistry) -> str:
             cumulative = 0
             for bound, count in zip(data.bounds, data.buckets):
                 cumulative += count
-                bound_label = _format_labels(key, hist.labels, extra=f"le=\"{bound}\"")
+                bound_label = _format_labels(key, hist.labels, extra=f'le="{bound}"')
                 lines.append(f"{name}_bucket{bound_label} {cumulative}")
             inf_label = _format_labels(key, hist.labels, extra='le="+Inf"')
             lines.append(f"{name}_bucket{inf_label} {data.count}")
@@ -85,7 +88,9 @@ def render_metrics(registry: MetricRegistry) -> str:
     return "\n".join(lines)
 
 
-def _format_labels(label_tuple: tuple[str, ...], label_names: list[str], extra: str = "") -> str:
+def _format_labels(
+    label_tuple: tuple[str, ...], label_names: list[str], extra: str = ""
+) -> str:
     parts = []
     if label_names:
         for name, val in zip(label_names, label_tuple):

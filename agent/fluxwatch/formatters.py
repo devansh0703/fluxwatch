@@ -26,7 +26,13 @@ class LogfmtFormatter:
 
 
 class HumanFormatter:
-    _level_colors = {"debug": "\033[36m", "info": "\033[32m", "warning": "\033[33m", "error": "\033[31m", "critical": "\033[1;31m"}
+    _level_colors = {
+        "debug": "\033[36m",
+        "info": "\033[32m",
+        "warning": "\033[33m",
+        "error": "\033[31m",
+        "critical": "\033[1;31m",
+    }
     _reset = "\033[0m"
 
     def format(self, entry: dict[str, Any]) -> str:

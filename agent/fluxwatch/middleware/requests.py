@@ -10,7 +10,9 @@ if TYPE_CHECKING:
 
 
 class LoggingHTTPTransport(httpx.BaseTransport):
-    def __init__(self, logger: FluxWatchLogger, inner: httpx.BaseTransport | None = None) -> None:
+    def __init__(
+        self, logger: FluxWatchLogger, inner: httpx.BaseTransport | None = None
+    ) -> None:
         self.logger = logger
         self._inner = inner or httpx.HTTPTransport()
 
@@ -48,7 +50,9 @@ class LoggingSession(httpx.Client):
         return response
 
 
-def wrap_session(logger: FluxWatchLogger, session: httpx.Client | None = None) -> LoggingSession:
+def wrap_session(
+    logger: FluxWatchLogger, session: httpx.Client | None = None
+) -> LoggingSession:
     if session is None:
         return LoggingSession(logger)
     return LoggingSession(logger, transport=session._transport)

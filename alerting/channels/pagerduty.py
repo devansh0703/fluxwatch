@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import time
@@ -29,7 +28,10 @@ class PagerDutyChannel:
                 "summary": alert.get("message", "Unknown alert"),
                 "source": alert.get("data", {}).get("service", "fluxwatch"),
                 "severity": severity,
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(alert.get("timestamp", time.time()))),
+                "timestamp": time.strftime(
+                    "%Y-%m-%dT%H:%M:%SZ",
+                    time.gmtime(alert.get("timestamp", time.time())),
+                ),
                 "custom_details": alert.get("data", {}),
             },
         }

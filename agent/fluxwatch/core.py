@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import json
 import time
 import threading
 from typing import Any
 
 from fluxwatch.config import FluxWatchConfig
-from fluxwatch.context import get_trace_id, get_span_id, new_span
+from fluxwatch.context import get_trace_id, get_span_id
 from fluxwatch.formatters import JSONFormatter, LogfmtFormatter, HumanFormatter
 from fluxwatch.filters import LevelFilter, SamplingFilter, FieldFilter
 from fluxwatch.transport import RedisTransport, _NoopTransport
@@ -90,7 +89,9 @@ class FluxWatchLogger:
     def critical(self, event: str, **kwargs: Any) -> None:
         self._emit("critical", event, **kwargs)
 
-    def metric(self, name: str, value: float, tags: dict[str, str] | None = None) -> None:
+    def metric(
+        self, name: str, value: float, tags: dict[str, str] | None = None
+    ) -> None:
         entry = {
             "timestamp_ns": time.time_ns(),
             "service": self.service,

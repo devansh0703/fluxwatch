@@ -18,10 +18,13 @@ class Router:
             return
         try:
             import time
+
             index = f"fluxwatch-logs-{time.strftime('%Y.%m.%d')}"
             body = ""
             for log in logs:
-                body += f'{{"index":{{}}}}\n{__import__("json").dumps(log, default=str)}\n'
+                body += (
+                    f'{{"index":{{}}}}\n{__import__("json").dumps(log, default=str)}\n'
+                )
             resp = await self._client.post(
                 f"{self._es_url}/{index}/_bulk",
                 content=body,
@@ -37,10 +40,13 @@ class Router:
             return
         try:
             import time
+
             index = f"fluxwatch-metrics-{time.strftime('%Y.%m.%d')}"
             body = ""
             for m in metrics:
-                body += f'{{"index":{{}}}}\n{__import__("json").dumps(m, default=str)}\n'
+                body += (
+                    f'{{"index":{{}}}}\n{__import__("json").dumps(m, default=str)}\n'
+                )
             resp = await self._client.post(
                 f"{self._es_url}/{index}/_bulk",
                 content=body,

@@ -49,7 +49,15 @@ def set_trace_context(trace_id: str, span_id: str) -> None:
 
 
 class SpanContext:
-    __slots__ = ("trace_id", "span_id", "name", "_token_trace", "_token_span", "_token_parent_trace", "_token_parent_span")
+    __slots__ = (
+        "trace_id",
+        "span_id",
+        "name",
+        "_token_trace",
+        "_token_span",
+        "_token_parent_trace",
+        "_token_parent_span",
+    )
 
     def __init__(self, trace_id: str, span_id: str, name: str | None = None) -> None:
         self.trace_id = trace_id

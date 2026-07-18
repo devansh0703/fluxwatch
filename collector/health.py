@@ -20,7 +20,11 @@ class ComponentHealth:
 
 
 class CollectorHealth:
-    def __init__(self, redis_url: str = "redis://localhost:6379", es_url: str = "http://localhost:9200") -> None:
+    def __init__(
+        self,
+        redis_url: str = "redis://localhost:6379",
+        es_url: str = "http://localhost:9200",
+    ) -> None:
         self._redis_url = redis_url
         self._es_url = es_url
         self._components: dict[str, ComponentHealth] = {}
@@ -39,6 +43,7 @@ class CollectorHealth:
         start = time.time()
         try:
             import redis.asyncio as aioredis
+
             r = aioredis.from_url(self._redis_url, socket_connect_timeout=2)
             await r.ping()
             await r.aclose()
@@ -75,5 +80,8 @@ class CollectorHealth:
             "uptime_seconds": time.time() - self._start_time,
             "events_processed": self._events_processed,
             "events_dropped": self._events_dropped,
-            "components": {k: {"healthy": v.healthy, "error": v.error, "latency_ms": v.latency_ms} for k, v in self._components.items()},
+            "components": {
+                k: {"healthy": v.healthy, "error": v.error, "latency_ms": v.latency_ms}
+                for k, v in self._components.items()
+            },
         }

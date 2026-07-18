@@ -33,7 +33,9 @@ def load_default_rules() -> list[Rule]:
     rules = [
         Rule(
             name="high_fill_latency",
-            evaluator=ThresholdEvaluator(metric="fill_latency_us", op=">", threshold=1000.0),
+            evaluator=ThresholdEvaluator(
+                metric="fill_latency_us", op=">", threshold=1000.0
+            ),
             severity="critical",
             cooldown_seconds=120.0,
             message_template="Fill latency exceeded 1ms: current value is {value}us",
@@ -49,7 +51,9 @@ def load_default_rules() -> list[Rule]:
         ),
         Rule(
             name="ws_reconnect_rate",
-            evaluator=RateOfChangeEvaluator(metric="ws_reconnects", window_seconds=300.0, max_rate=3.0),
+            evaluator=RateOfChangeEvaluator(
+                metric="ws_reconnects", window_seconds=300.0, max_rate=3.0
+            ),
             severity="warning",
             cooldown_seconds=600.0,
             message_template="WebSocket reconnect rate too high: {value}/min",
@@ -57,7 +61,9 @@ def load_default_rules() -> list[Rule]:
         ),
         Rule(
             name="ws_heartbeat_lag",
-            evaluator=ThresholdEvaluator(metric="ws_heartbeat_lag_ms", op=">", threshold=5000.0),
+            evaluator=ThresholdEvaluator(
+                metric="ws_heartbeat_lag_ms", op=">", threshold=5000.0
+            ),
             severity="critical",
             cooldown_seconds=60.0,
             message_template="WS heartbeat lag exceeded 5s: {value}ms",
@@ -73,7 +79,9 @@ def load_default_rules() -> list[Rule]:
         ),
         Rule(
             name="throughput_anomaly",
-            evaluator=AnomalyEvaluator(metric="events_per_second", z_threshold=3.0, window_size=100),
+            evaluator=AnomalyEvaluator(
+                metric="events_per_second", z_threshold=3.0, window_size=100
+            ),
             severity="warning",
             cooldown_seconds=300.0,
             message_template="Throughput anomaly detected: {value} events/s (z-score > 3)",

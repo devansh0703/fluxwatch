@@ -10,7 +10,9 @@ logger = logging.getLogger("fluxwatch.alerting.webhook")
 
 
 class WebhookChannel:
-    def __init__(self, url: str, headers: dict[str, str] | None = None, method: str = "POST") -> None:
+    def __init__(
+        self, url: str, headers: dict[str, str] | None = None, method: str = "POST"
+    ) -> None:
         self._url = url
         self._headers = headers or {"Content-Type": "application/json"}
         self._method = method.upper()
@@ -44,6 +46,8 @@ class WebhookChannel:
                 return
 
             if resp.status_code >= 400:
-                logger.warning("webhook_failed status=%d url=%s", resp.status_code, self._url)
+                logger.warning(
+                    "webhook_failed status=%d url=%s", resp.status_code, self._url
+                )
         except Exception as e:
             logger.error("webhook_error url=%s: %s", self._url, e)

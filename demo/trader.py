@@ -16,7 +16,9 @@ _logger = logging.getLogger(__name__)
 
 
 class DemoTrader:
-    def __init__(self, redis_url: str = "redis://localhost:6379", stream: str = "fluxwatch:logs") -> None:
+    def __init__(
+        self, redis_url: str = "redis://localhost:6379", stream: str = "fluxwatch:logs"
+    ) -> None:
         self._redis_url = redis_url
         self._stream = stream
         self._redis: aioredis.Redis | None = None
@@ -37,7 +39,9 @@ class DemoTrader:
 
         for ex in self._exchanges:
             await ex.connect()
-            await self._emit("exchange_connected", exchange=ex.name, ws_latency_ms=ex._latency_ms)
+            await self._emit(
+                "exchange_connected", exchange=ex.name, ws_latency_ms=ex._latency_ms
+            )
 
         await asyncio.gather(
             self._order_loop(),
@@ -71,7 +75,9 @@ class DemoTrader:
             except Exception:
                 _logger.warning("Failed to emit event to Redis", exc_info=True)
 
-    async def _emit_metric(self, name: str, value: float, tags: dict[str, str] | None = None) -> None:
+    async def _emit_metric(
+        self, name: str, value: float, tags: dict[str, str] | None = None
+    ) -> None:
         entry = {
             "timestamp_ns": time.time_ns(),
             "service": "demo_trader",
@@ -119,8 +125,14 @@ class DemoTrader:
                     fee=result["fee"],
                     latency_ns=latency_ns,
                 )
-                await self._emit_metric("order_latency_us", latency_ns / 1000, {"exchange": exchange.name, "side": side})
-                await self._emit_metric("fill_count", self._fill_count, {"exchange": exchange.name})
+                await self._emit_metric(
+                    "order_latency_us",
+                    latency_ns / 1000,
+                    {"exchange": exchange.name, "side": side},
+                )
+                await self._emit_metric(
+                    "fill_count", self._fill_count, {"exchange": exchange.name}
+                )
             else:
                 self._reject_count += 1
                 await self._emit(
@@ -132,11 +144,19 @@ class DemoTrader:
                     latency_ns=latency_ns,
                     level="warning",
                 )
-                await self._emit_metric("reject_count", self._reject_count, {"exchange": exchange.name, "reason": result["reason"]})
+                await self._emit_metric(
+                    "reject_count",
+                    self._reject_count,
+                    {"exchange": exchange.name, "reason": result["reason"]},
+                )
 
             reject_rate = self._reject_count / max(1, self._order_count)
-            await self._emit_metric("reject_rate", reject_rate, {"exchange": exchange.name})
-            await self._emit_metric("avg_latency_us", avg_latency / 1000, {"exchange": exchange.name})
+            await self._emit_metric(
+                "reject_rate", reject_rate, {"exchange": exchange.name}
+            )
+            await self._emit_metric(
+                "avg_latency_us", avg_latency / 1000, {"exchange": exchange.name}
+            )
             await self._emit_metric("total_orders", self._order_count)
 
             await asyncio.sleep(random.uniform(0.001, 0.05))
@@ -146,8 +166,14 @@ class DemoTrader:
             for exchange in self._exchanges:
                 if exchange._connected:
                     lag = await exchange.heartbeat()
-                    await self._emit_metric("ws_heartbeat_lag_ms", lag, {"exchange": exchange.name})
-                    await self._emit_metric("ws_message_rate", random.uniform(500, 2000), {"exchange": exchange.name})
+                    await self._emit_metric(
+                        "ws_heartbeat_lag_ms", lag, {"exchange": exchange.name}
+                    )
+                    await self._emit_metric(
+                        "ws_message_rate",
+                        random.uniform(500, 2000),
+                        {"exchange": exchange.name},
+                    )
             await asyncio.sleep(5.0)
 
     async def _reconnect_loop(self) -> None:
@@ -162,11 +188,14 @@ class DemoTrader:
                 reconnect_time_ms=reconnect_ms,
                 latency_ns=int(reconnect_ms * 1_000_000),
             )
-            await self._emit_metric("ws_reconnect_count", 1, {"exchange": exchange.name})
+            await self._emit_metric(
+                "ws_reconnect_count", 1, {"exchange": exchange.name}
+            )
 
 
 async def main() -> None:
     import os
+
     trader = DemoTrader(
         redis_url=os.environ.get("FLUXWATCH_REDIS_URL", "redis://localhost:6379"),
         stream=os.environ.get("FLUXWATCH_REDIS_STREAM", "fluxwatch:logs"),

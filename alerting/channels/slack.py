@@ -10,14 +10,20 @@ logger = logging.getLogger("fluxwatch.alerting.slack")
 
 
 class SlackChannel:
-    def __init__(self, webhook_url: str, channel: str = "#alerts", username: str = "FluxWatch") -> None:
+    def __init__(
+        self, webhook_url: str, channel: str = "#alerts", username: str = "FluxWatch"
+    ) -> None:
         self._webhook_url = webhook_url
         self._channel = channel
         self._username = username
         self._client = httpx.AsyncClient(timeout=10.0)
 
     async def send(self, alert: dict[str, Any]) -> None:
-        severity_emoji = {"critical": ":rotating_light:", "warning": ":warning:", "info": ":information_source:"}
+        severity_emoji = {
+            "critical": ":rotating_light:",
+            "warning": ":warning:",
+            "info": ":information_source:",
+        }
         emoji = severity_emoji.get(alert.get("severity", ""), ":bell:")
 
         resolved = alert.get("resolved", False)
@@ -33,8 +39,16 @@ class SlackChannel:
                     "title": f"[{status}] {alert.get('rule', 'unknown')}",
                     "text": alert.get("message", ""),
                     "fields": [
-                        {"title": "Severity", "value": alert.get("severity", "unknown"), "short": True},
-                        {"title": "Service", "value": alert.get("data", {}).get("service", "unknown"), "short": True},
+                        {
+                            "title": "Severity",
+                            "value": alert.get("severity", "unknown"),
+                            "short": True,
+                        },
+                        {
+                            "title": "Service",
+                            "value": alert.get("data", {}).get("service", "unknown"),
+                            "short": True,
+                        },
                     ],
                 }
             ],

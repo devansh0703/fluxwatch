@@ -3,8 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import time
-from typing import Any
 
 import redis.asyncio as aioredis
 
@@ -41,7 +39,9 @@ class Pipeline:
     async def start(self) -> None:
         self._redis = aioredis.from_url(self._redis_url, decode_responses=True)
         try:
-            await self._redis.xgroup_create(self._stream, self._group, id="0", mkstream=True)
+            await self._redis.xgroup_create(
+                self._stream, self._group, id="0", mkstream=True
+            )
         except aioredis.ResponseError as e:
             if "BUSYGROUP" not in str(e):
                 raise
@@ -111,6 +111,7 @@ class Pipeline:
 
 async def run_pipeline() -> None:
     import os
+
     pipeline = Pipeline(
         redis_url=os.environ.get("FLUXWATCH_REDIS_URL", "redis://localhost:6379"),
         stream=os.environ.get("FLUXWATCH_REDIS_STREAM", "fluxwatch:logs"),

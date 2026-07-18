@@ -36,4 +36,5 @@ class FastAPILoggingMiddleware:
                 return response
 
         from starlette.middleware import Middleware
+
         app.add_middleware(Middleware(_LoggingMiddleware, fw_logger=logger))

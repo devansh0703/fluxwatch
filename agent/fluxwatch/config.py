@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import yaml
 
@@ -42,10 +42,13 @@ class FluxWatchConfig:
             min_level=os.environ.get("FLUXWATCH_MIN_LEVEL", "info"),
             format=os.environ.get("FLUXWATCH_FORMAT", "json"),
             sample_rate=float(os.environ.get("FLUXWATCH_SAMPLE_RATE", "0")) or None,
-            field_allowlist=os.environ.get("FLUXWATCH_FIELD_ALLOWLIST", "").split(",") or None,
-            field_denylist=os.environ.get("FLUXWATCH_FIELD_DENYLIST", "").split(",") or None,
+            field_allowlist=os.environ.get("FLUXWATCH_FIELD_ALLOWLIST", "").split(",")
+            or None,
+            field_denylist=os.environ.get("FLUXWATCH_FIELD_DENYLIST", "").split(",")
+            or None,
             prometheus_port=int(os.environ.get("FLUXWATCH_PROMETHEUS_PORT", "9100")),
-            otel_enabled=os.environ.get("FLUXWATCH_OTEL_ENABLED", "false").lower() == "true",
+            otel_enabled=os.environ.get("FLUXWATCH_OTEL_ENABLED", "false").lower()
+            == "true",
             hostname=hostname,
             pod_name=pod_name,
         )

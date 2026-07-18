@@ -4,7 +4,14 @@ import random
 from typing import Any
 
 
-_LEVEL_ORDER = {"trace": 0, "debug": 1, "info": 2, "warning": 3, "error": 4, "critical": 5}
+_LEVEL_ORDER = {
+    "trace": 0,
+    "debug": 1,
+    "info": 2,
+    "warning": 3,
+    "error": 4,
+    "critical": 5,
+}
 
 
 class LevelFilter:
@@ -25,7 +32,9 @@ class SamplingFilter:
 
 
 class FieldFilter:
-    def __init__(self, allow: list[str] | None = None, deny: list[str] | None = None) -> None:
+    def __init__(
+        self, allow: list[str] | None = None, deny: list[str] | None = None
+    ) -> None:
         self.allow = set(allow) if allow else None
         self.deny = set(deny) if deny else set()
 

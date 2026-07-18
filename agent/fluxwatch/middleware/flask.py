@@ -15,11 +15,13 @@ class FlaskLoggingMiddleware:
         @app.before_request
         def before_request() -> None:
             from flask import g
+
             g._fluxwatch_start = time.perf_counter_ns()
 
         @app.after_request
         def after_request(response: Any) -> Any:
             from flask import g, request
+
             start = getattr(g, "_fluxwatch_start", None)
             latency_ns = (time.perf_counter_ns() - start) if start else 0
             self.logger.info(

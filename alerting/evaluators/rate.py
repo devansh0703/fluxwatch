@@ -6,7 +6,9 @@ from typing import Any
 
 
 class RateOfChangeEvaluator:
-    def __init__(self, metric: str = "", window_seconds: float = 300.0, max_rate: float = 3.0) -> None:
+    def __init__(
+        self, metric: str = "", window_seconds: float = 300.0, max_rate: float = 3.0
+    ) -> None:
         self.metric = metric
         self.window_seconds = window_seconds
         self.max_rate = max_rate

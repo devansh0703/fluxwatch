@@ -5,7 +5,9 @@ from typing import Any
 
 
 class AnomalyEvaluator:
-    def __init__(self, metric: str = "", z_threshold: float = 3.0, window_size: int = 100) -> None:
+    def __init__(
+        self, metric: str = "", z_threshold: float = 3.0, window_size: int = 100
+    ) -> None:
         self.metric = metric
         self.z_threshold = z_threshold
         self.window_size = window_size
@@ -26,7 +28,7 @@ class AnomalyEvaluator:
         values = list(self._values)
         mean = sum(values) / len(values)
         variance = sum((v - mean) ** 2 for v in values) / len(values)
-        std = variance ** 0.5
+        std = variance**0.5
 
         if std == 0:
             return False

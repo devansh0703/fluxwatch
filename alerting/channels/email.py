@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -46,18 +47,19 @@ class EmailChannel:
         html = f"""
         <html>
         <body style="font-family: monospace; background: #1a1a2e; color: #e0e0e0; padding: 20px;">
-            <h2 style="color: {'#36a64f' if resolved else '#ff4444'};">[{status}] {rule}</h2>
+            <h2 style="color: {"#36a64f" if resolved else "#ff4444"};">[{status}] {rule}</h2>
             <p><strong>Severity:</strong> {severity}</p>
-            <p><strong>Message:</strong> {alert.get('message', '')}</p>
-            <p><strong>Timestamp:</strong> {alert.get('timestamp', '')}</p>
+            <p><strong>Message:</strong> {alert.get("message", "")}</p>
+            <p><strong>Timestamp:</strong> {alert.get("timestamp", "")}</p>
             <h3>Data</h3>
-            <pre style="background: #0f0f23; padding: 10px; border-radius: 4px;">{json.dumps(alert.get('data', {}), indent=2)}</pre>
+            <pre style="background: #0f0f23; padding: 10px; border-radius: 4px;">{json.dumps(alert.get("data", {}), indent=2)}</pre>
         </body>
         </html>
         """
         msg.attach(MIMEText(html, "html"))
 
         import asyncio
+
         await asyncio.get_event_loop().run_in_executor(None, self._send_sync, msg)
 
     def _send_sync(self, msg: MIMEMultipart) -> None:
@@ -70,6 +72,3 @@ class EmailChannel:
                 server.sendmail(self._from_addr, self._to_addrs, msg.as_string())
         except Exception as e:
             logger.error("email_send_error: %s", e)
-
-
-import json

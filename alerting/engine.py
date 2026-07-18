@@ -64,7 +64,9 @@ class AlertEngine:
             alert = {
                 "rule": rule.name,
                 "severity": rule.severity,
-                "message": rule.message_template.format(**data) if data else rule.message_template,
+                "message": rule.message_template.format(**data)
+                if data
+                else rule.message_template,
                 "timestamp": now,
                 "data": data,
             }
@@ -74,7 +76,11 @@ class AlertEngine:
                 try:
                     await channel.send(alert)
                 except Exception as e:
-                    logger.error("channel_send_failed channel=%s error=%s", type(channel).__name__, e)
+                    logger.error(
+                        "channel_send_failed channel=%s error=%s",
+                        type(channel).__name__,
+                        e,
+                    )
         elif rule.name in self._active_alerts:
             resolved = self._active_alerts.pop(rule.name)
             resolved["resolved"] = True
@@ -84,13 +90,21 @@ class AlertEngine:
                 try:
                     await channel.send(resolved)
                 except Exception as e:
-                    logger.error("resolve_send_failed channel=%s error=%s", type(channel).__name__, e)
+                    logger.error(
+                        "resolve_send_failed channel=%s error=%s",
+                        type(channel).__name__,
+                        e,
+                    )
 
     async def _fetch_data(self, rule: Rule) -> dict[str, Any] | None:
         if self._data_source is None:
             return {}
         try:
-            return await self._data_source.query(rule.query) if hasattr(self._data_source, "query") else {}
+            return (
+                await self._data_source.query(rule.query)
+                if hasattr(self._data_source, "query")
+                else {}
+            )
         except Exception as e:
             logger.warning("data_fetch_failed rule=%s: %s", rule.name, e)
             return None

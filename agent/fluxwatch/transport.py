@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import logging
 import threading
 import time
@@ -69,7 +68,9 @@ class RedisTransport:
         try:
             self._client.aclose()
         except Exception:
-            logging.getLogger("fluxwatch.transport").warning("Failed to close Redis client", exc_info=True)
+            logging.getLogger("fluxwatch.transport").warning(
+                "Failed to close Redis client", exc_info=True
+            )
 
 
 class _NoopTransport:

@@ -65,7 +65,9 @@ def test_configure_creates_global():
 
 def test_json_formatter():
     f = JSONFormatter()
-    result = f.format({"timestamp_ns": 123, "service": "s", "level": "info", "message": "hi"})
+    result = f.format(
+        {"timestamp_ns": 123, "service": "s", "level": "info", "message": "hi"}
+    )
     parsed = json.loads(result)
     assert parsed["service"] == "s"
 
@@ -73,14 +75,21 @@ def test_json_formatter():
 def test_logfmt_formatter():
     f = LogfmtFormatter()
     result = f.format({"service": "s", "level": "info", "count": 42})
-    assert 'service=s' in result
-    assert 'level=info' in result
-    assert 'count=42' in result
+    assert "service=s" in result
+    assert "level=info" in result
+    assert "count=42" in result
 
 
 def test_human_formatter():
     f = HumanFormatter()
-    result = f.format({"timestamp_ns": time.time_ns(), "service": "s", "level": "info", "message": "hello"})
+    result = f.format(
+        {
+            "timestamp_ns": time.time_ns(),
+            "service": "s",
+            "level": "info",
+            "message": "hello",
+        }
+    )
     assert "INFO" in result
     assert "hello" in result
     assert "s" in result
@@ -88,6 +97,7 @@ def test_human_formatter():
 
 def test_level_filter():
     from fluxwatch.filters import LevelFilter
+
     f = LevelFilter("warning")
     assert f.should_emit({"level": "error"})
     assert f.should_emit({"level": "warning"})
@@ -97,6 +107,7 @@ def test_level_filter():
 
 def test_sampling_filter():
     from fluxwatch.filters import SamplingFilter
+
     f = SamplingFilter(0.0)
     for _ in range(10):
         assert not f.should_emit({"level": "info"})

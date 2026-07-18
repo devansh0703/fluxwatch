@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 
 @dataclass
@@ -17,7 +16,9 @@ class SilenceManager:
     def __init__(self) -> None:
         self._silences: list[Silence] = []
 
-    def add_silence(self, rule_name: str, duration_seconds: float, comment: str = "") -> Silence:
+    def add_silence(
+        self, rule_name: str, duration_seconds: float, comment: str = ""
+    ) -> Silence:
         now = time.time()
         silence = Silence(
             rule_name=rule_name,
@@ -41,10 +42,17 @@ class SilenceManager:
         self._silences = [s for s in self._silences if s.end_time > now]
         return list(self._silences)
 
-    def enter_maintenance(self, duration_seconds: float, comment: str = "maintenance") -> list[Silence]:
+    def enter_maintenance(
+        self, duration_seconds: float, comment: str = "maintenance"
+    ) -> list[Silence]:
         """Silence ALL rules for a duration."""
         now = time.time()
-        silence = Silence(rule_name="*", start_time=now, end_time=now + duration_seconds, comment=comment)
+        silence = Silence(
+            rule_name="*",
+            start_time=now,
+            end_time=now + duration_seconds,
+            comment=comment,
+        )
         self._silences.append(silence)
         return [silence]
 

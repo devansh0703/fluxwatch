@@ -4,6 +4,7 @@ from fluxwatch.prometheus import render_metrics
 
 def test_counter_concurrent():
     import threading
+
     c = Counter("concurrent_counter")
     errors = []
 
@@ -26,6 +27,7 @@ def test_counter_concurrent():
 def test_histogram_concurrent():
     import threading
     import random
+
     h = Histogram("concurrent_hist")
     errors = []
 
@@ -47,6 +49,7 @@ def test_histogram_concurrent():
 
 def test_gauge_thread_safety():
     import threading
+
     g = Gauge("concurrent_gauge")
 
     def inc():
@@ -57,7 +60,9 @@ def test_gauge_thread_safety():
         for _ in range(100):
             g.dec()
 
-    threads = [threading.Thread(target=inc) for _ in range(5)] + [threading.Thread(target=dec) for _ in range(5)]
+    threads = [threading.Thread(target=inc) for _ in range(5)] + [
+        threading.Thread(target=dec) for _ in range(5)
+    ]
     for t in threads:
         t.start()
     for t in threads:

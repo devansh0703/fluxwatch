@@ -1,5 +1,4 @@
-import json
-from fluxwatch.transport import _NoopTransport, RedisTransport
+from fluxwatch.transport import _NoopTransport
 from fluxwatch.config import FluxWatchConfig
 
 

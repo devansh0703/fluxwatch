@@ -27,6 +27,7 @@ class Enricher:
             enriched.setdefault("container_id", self._container_id)
         if "timestamp_ns" not in enriched:
             import time
+
             enriched["timestamp_ns"] = time.time_ns()
         return enriched
 
@@ -41,5 +42,8 @@ class Enricher:
                             return parts[2][-12:]
         except (FileNotFoundError, PermissionError) as e:
             import logging
-            logging.getLogger("fluxwatch.enricher").debug("Could not read container ID: %s", e)
+
+            logging.getLogger("fluxwatch.enricher").debug(
+                "Could not read container ID: %s", e
+            )
         return ""
